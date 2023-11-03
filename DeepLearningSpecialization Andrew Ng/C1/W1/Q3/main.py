@@ -1,19 +1,30 @@
+import matplotlib.pyplot as plt
 import numpy as np
 
-py_array = [1, 2, 3, 4]
-np_array = np.array([1, 2, 3, 4])
 
-print(np.__version__)
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
 
-print(f"py_array = {py_array}, np_array = {np_array}, np_array.shape = {np_array.shape}")
 
-# exp 函数输入实数数组，返回每个元素 e^x 的值的数组
-print(f"np.exp(np_array) = {np.exp(np_array)}")
+def sigmoid_derivative(x):
+    return sigmoid(x) * (1 - sigmoid(x))
 
-# log 函数输入实数数组，返回每个元素 ln(x) 的值的数组
-print(f"np.log(np_array) = {np.log(np_array)}")
 
-# reshape 函数重新定义维度，新维度的元素个数与原维度元素个数必须保持一致
-re_shape = np_array.reshape((2, 2))
-print(f"np_array = {np_array}, re_shape = {re_shape}")
+def rectified_linear_unity(x):
+    return np.maximum(0, x)
 
+x = np.arange(-10., 10., 0.1)
+y = sigmoid(x)
+plt.plot(x, y, linewidth=2.0)
+plt.title("sigmoid")
+plt.show()
+
+y = sigmoid_derivative(x)
+plt.plot(x, y, linewidth=2.0)
+plt.title("sigmoid_derivative")
+plt.show()
+
+y = rectified_linear_unity(x)
+plt.plot(x, y, linewidth=2.0)
+plt.title("Rectified Linear Unit")
+plt.show()
