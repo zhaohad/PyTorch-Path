@@ -19,7 +19,7 @@
 
 3. ReLU函数：y = max(0, x)
 
-![alt 属性文本](ReLU.png "rectified_linear_unity()")
+![alt 属性文本](ReLU.png "rectified_linear_unit()")
 
 
 
@@ -36,7 +36,7 @@ def sigmoid_derivative(x):
     return sigmoid(x) * (1 - sigmoid(x))
 
 
-def rectified_linear_unity(x):
+def rectified_linear_unit(x):
     return np.maximum(0, x)
 
 x = np.arange(-10., 10., 0.1)
@@ -50,7 +50,7 @@ plt.plot(x, y, linewidth=2.0)
 plt.title("sigmoid_derivative")
 plt.show()
 
-y = rectified_linear_unity(x)
+y = rectified_linear_unit(x)
 plt.plot(x, y, linewidth=2.0)
 plt.title("Rectified Linear Unit")
 plt.show()
