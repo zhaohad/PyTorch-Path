@@ -27,8 +27,8 @@ def infer(img_path, W, B):
     img = Image.open(img_path)
     np_img = numpy.array(img, dtype=np.float32).transpose(2, 1, 0)
     np_img = normalize_image(np_img.reshape(-1, 1))
-    y_cat0 = sigmoid(linear(W, B, np_img))
-    return y_cat0
+    y_hat = sigmoid(linear(W, B, np_img))
+    return y_hat
 
 
 def normalize_image(img):
