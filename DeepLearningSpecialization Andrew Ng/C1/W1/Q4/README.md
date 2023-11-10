@@ -1,5 +1,7 @@
 # numpy构建基本函数
 
+假设x特征向量仅有1个元素
+
 1. 画出Active函数（激活函数）![alt 属性文本](active.png)
 
 2. 画出损失函数（Loss函数）![alt 属性文本](loss.png)

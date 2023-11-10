@@ -15,7 +15,7 @@ def draw_3d(X, Y, Z):
 
 
 def linear(w, b, x=TRAIN_DATA_X):
-    return w * x + b
+    return w * x + b  # 这里的X仅仅只有一个元素
 
 
 def sigmoid(x):
@@ -43,6 +43,8 @@ draw_3d(X=W, Y=B, Z=Z)
 CNT_data_set = 1000
 train_datax = numpy.random.randn(CNT_data_set, 1)
 train_datay = numpy.random.randint(low=0, high=2, size=CNT_data_set).reshape(CNT_data_set, 1)
+
+print(f"train_datax = {train_datax}")
 
 RESULT = numpy.zeros((40, 40))
 for i in range(CNT_data_set):
