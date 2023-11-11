@@ -36,7 +36,7 @@ def normalize_image(img):
 
 
 # 读取图片
-img = Image.open("../../../Data/630_422/cat0.jpg")
+img = Image.open("../../../Data/630_422/train/cat0.png")
 img.show()
 
 X = numpy.array(img, dtype=np.float32).transpose(2, 1, 0)
@@ -71,7 +71,7 @@ for i in range(epochs):
     a = sigmoid(Z)
 
     L = loss(a, 1)
-    print(f"epoch: {i}, a = {a}, Loss = {L}")
+    print(f"epoch: {i}, a = {a}, Loss = {L}, Z = {Z}, B = {B}")
 
     if i == epochs - 1:
         break
@@ -79,15 +79,16 @@ for i in range(epochs):
     dz = a - Y
     dw = X * dz
     db = dz
+    print(f"dz = {dz}, dw = {dw}, db = {db}")
 
     W = W - learning_rate * dw
     B = B - learning_rate * db
 
 
-y_hat_cat0 = infer("../../../Data/630_422/cat0.jpg", W, B)
+y_hat_cat0 = infer("../../../Data/630_422/train/cat0.png", W, B)
 l = loss(y_hat_cat0, 1)
 print(f"y_hat_cat0 = {y_hat_cat0}, loss = {l}")
 
-y_hat_cat1 = infer("../../../Data/630_422/cat1.jpg", W, B)
+y_hat_cat1 = infer("../../../Data/630_422/train/cat1.jpg", W, B)
 l = loss(y_hat_cat1, 1)
 print(f"y_hat_cat0 = {y_hat_cat1}, loss = {l}")

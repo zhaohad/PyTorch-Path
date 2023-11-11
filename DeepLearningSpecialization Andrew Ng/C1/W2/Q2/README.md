@@ -10,11 +10,13 @@
 ```python
 import numpy as np
 
+
 def normalize_image(img):
     return img * 2 / 0xff - 1
 
+
 # 读取图片
-img = Image.open("../../../Data/630_422/cat0.jpg")
+img = Image.open("../../../Data/630_422/train/cat0.png")
 img.show()
 
 X = numpy.array(img, dtype=np.float32).transpose(2, 1, 0)
@@ -64,6 +66,7 @@ for i in range(epochs):
     B = B - learning_rate * db
 ```
 3. 对于第二步得到的权重和偏移，对其他同尺寸图片进行估计:
+
 ```python
 def infer(img_path, W, B):
     img = Image.open(img_path)
@@ -72,11 +75,12 @@ def infer(img_path, W, B):
     y_cat0 = sigmoid(linear(W, B, np_img))
     return y_cat0
 
-y_hat_cat0 = infer("../../../Data/630_422/cat0.jpg", W, B)
+
+y_hat_cat0 = infer("../../../Data/630_422/train/cat0.png", W, B)
 l = loss(y_hat_cat0, 1)
 print(f"y_hat_cat0 = {y_hat_cat0}, loss = {l}")
 
-y_hat_cat1 = infer("../../../Data/630_422/cat1.jpg", W, B)
+y_hat_cat1 = infer("../../../Data/630_422/train/cat1.jpg", W, B)
 l = loss(y_hat_cat1, 1)
 print(f"y_hat_cat0 = {y_hat_cat1}, loss = {l}")
 ```

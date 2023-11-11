@@ -1,7 +1,7 @@
 import imageio
 import torch
 
-img_arr = imageio.imread('./img.png')
+img_arr = imageio.imread('./dog.png')
 
 print(f'img_arr.shape = {img_arr.shape}')
 
