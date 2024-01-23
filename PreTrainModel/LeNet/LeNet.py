@@ -55,23 +55,14 @@ class LeNet(nn.Module):
 
         x = self.full6(x)
         # print(f"After full6: {x.shape}")
+        x = self.Sigmoid(x)
         x = self.output(x)
         # print(f"After output: {x.shape}")
         return x
 
 
 if __name__ == "__main__":
-    x = torch.rand([2, 1, 28, 28])
-    x[0][0][0][0] = 1
-    x[0][0][0][1] = 0
-    x[0][0][0][2] = 0
-
-    x[0][0][1][0] = 0
-    x[0][0][1][1] = 1
-    x[0][0][1][2] = 0
-
-    x[0][0][2][0] = 0
-    x[0][0][2][1] = 0
-    x[0][0][2][2] = 0
+    x = torch.rand([16, 1, 28, 28])
+    print(f"x.shape = {x.shape}")
     model = LeNet()
     y = model(x)

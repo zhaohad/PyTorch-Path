@@ -8,13 +8,18 @@ DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 data_path = "../../data"
 transform = transforms.Compose([
+    # transforms.Resize((28, 28)),
     transforms.ToTensor(),
+    # transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+    # transforms.Normalize((0.5,), (0.5,)),  # MNIST数据是单通道的，所以只写1维
 ])
 
 train_dataset = datasets.MNIST(root=data_path, transform=transform, train=True, download=True)
+# train_dataset = datasets.CIFAR10(root=data_path, transform=transform, train=True, download=True)
 train_dataloader = torch.utils.data.DataLoader(dataset=train_dataset, batch_size=16, shuffle=True)
 
 test_dataset = datasets.MNIST(root=data_path, transform=transform, train=False, download=True)
+# test_dataset = datasets.MCIFAR10NIST(root=data_path, transform=transform, train=False, download=True)
 test_dataloader = torch.utils.data.DataLoader(dataset=train_dataset, batch_size=16, shuffle=True)
 
 net = LeNet().to(DEVICE)
@@ -71,5 +76,6 @@ if __name__ == "__main__":
             print(f"lr: {param_group['lr']}")
         train(train_dataloader, net, loss_fn, optimizer)
         val(test_dataloader, net)
+        lr_scheduler.step()
 
     torch.save(net.state_dict(), "model.pth")
