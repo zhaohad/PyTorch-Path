@@ -14,7 +14,10 @@ class InteractiveMatplot:
         self.fig.canvas.mpl_connect('button_press_event', self.call_move)
         self.fig.canvas.mpl_connect('button_release_event', self.call_move)
         self.fig.canvas.mpl_connect('motion_notify_event', self.call_move)
-        return self.fig.add_axes([0, 0, 1, 1])
+        self.axes = self.fig.add_axes([0, 0, 1, 1])
+
+        self.axes.axis("off")
+        return self.axes
 
     def show(self):
         plt.show()

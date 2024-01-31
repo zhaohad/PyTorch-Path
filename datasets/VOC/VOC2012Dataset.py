@@ -3,6 +3,8 @@ import os
 import xml.etree.ElementTree as ET
 from xml.etree.ElementTree import Element
 
+import torch
+from PIL import Image
 from torch.utils.data import Dataset
 
 MAIN_PATH = "ImageSets/Main"
@@ -10,6 +12,8 @@ MAIN_TRAIN = "train.txt"
 ANNOTATIONS_PATH = "Annotations"
 IMAGE_PATH = "JPEGImages"
 MAIN_VAL = "val.txt"
+
+g_classes_map: dict[str, int] = {}
 
 
 class VOC2012Dataset(Dataset):
@@ -26,14 +30,48 @@ class VOC2012Dataset(Dataset):
         self.val: list[RawData] = []
 
         self.resolve_main(self.main_path)
-        print(len(self.train))
-        print(len(self.val))
+
+    def __len__(self):
+        return len(self._get_data_list())
+
+    def __getitem__(self, item):
+        data = self._get_data_list()[item]
+
+        boxes = [[obj.bndbox.xmin, obj.bndbox.ymin, obj.bndbox.xmax, obj.bndbox.ymax] for obj in data.objects]
+        labels = [g_classes_map[obj.name] for obj in data.objects]
+        boxes = torch.as_tensor(boxes, dtype=torch.float32)
+        area = (boxes[:, 3] - boxes[:, 1]) * (boxes[:, 2] - boxes[:, 0])
+        is_crowd = [obj.difficult if obj.difficult is not None else 0 for obj in data.objects]
+
+        target = {
+            'boxes': torch.as_tensor(boxes, dtype=torch.float32),
+            'labels': torch.as_tensor(labels, dtype=torch.int64),
+            'image_id': torch.tensor([data.img_id]),
+            'area': area,
+            'iscrowd': torch.as_tensor(is_crowd, dtype=torch.int64)
+        }
+        image = Image.open(data.img_path)
+        return image, target
+
+    def get_height_and_width(self, item):
+        data = self._get_data_list()[item]
+        return data.size.width, data.size.height
+
 
     def resolve_main(self, dir_path: str):
         train_file = os.path.join(dir_path, MAIN_TRAIN)
         self.resolve_main_file(train_file)
         val_file = os.path.join(dir_path, MAIN_VAL)
         self.resolve_main_file(val_file)
+
+    def _get_data_list(self):
+        data_list = {}
+        if self.train_val.__eq__('train'):
+            data_list = self.train
+        elif self.train_val.__eq__('val'):
+            data_list = self.val
+        return data_list
+
 
     def resolve_main_file(self, file_path: str):
         if file_path.endswith(MAIN_TRAIN):
@@ -42,12 +80,13 @@ class VOC2012Dataset(Dataset):
             data_list = self.val
         with open(file_path, "r") as inF:
             for line in inF:
-                data_list.append(RawData(img_dir=self.img_dir, ann_dir=self.ann_dir, name=line.strip()))
+                data = RawData(image_id=len(data_list), img_dir=self.img_dir, ann_dir=self.ann_dir, name=line.strip())
+                data_list.append(data)
 
 
 class RawData:
-
-    def __init__(self, img_dir: str, ann_dir: str, name: str):
+    def __init__(self, image_id: int, img_dir: str, ann_dir: str, name: str):
+        self.img_id = image_id
         self.img_path = os.path.join(img_dir, f"{name}.jpg")
         self.ann_path = os.path.join(ann_dir, f"{name}.xml")
         assert os.path.exists(self.img_path)
@@ -94,6 +133,7 @@ class Object:
         for child in item:
             if child.tag == "name":
                 self.name = child.text
+                self._register_class(self.name)
             if child.tag == "pose":
                 self.pose = child.text
             if child.tag == "truncated":
@@ -101,9 +141,14 @@ class Object:
             if child.tag == "occluded":
                 self.occluded = child.text
             if child.tag == "difficult":
-                self.difficult = child.text
+                self.difficult = int(child.text)
             if child.tag == "bndbox":
                 self.bndbox = BndBox(child)
+
+    def _register_class(self, cls: str):
+        global g_classes_map
+        if cls not in g_classes_map:
+            g_classes_map[cls] = len(g_classes_map) + 1
 
     def __str__(self):
         return str(self.__dict__)
@@ -117,13 +162,13 @@ class BndBox:
     def __init__(self, item: Element):
         for child in item:
             if child.tag == "xmin":
-                self.xmin = child.text
+                self.xmin = float(child.text)
             elif child.tag == "ymin":
-                self.ymin = child.text
+                self.ymin = float(child.text)
             elif child.tag == "xmax":
-                self.xmax = child.text
+                self.xmax = float(child.text)
             elif child.tag == "ymax":
-                self.ymax = child.text
+                self.ymax = float(child.text)
 
     def __str__(self):
         return str(self.__dict__)
