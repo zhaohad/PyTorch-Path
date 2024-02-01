@@ -4,14 +4,13 @@ import matplotlib.image as mpimg
 import matplotlib.patches as patches
 import matplotlib.pyplot as plt
 from matplotlib.axes._axes import Axes
-from VOC2012Dataset import VOC2012Dataset
+from .VOC2012Dataset import VOC2012Dataset
 
-from VOC2012Dataset import RawData
+from .VOC2012Dataset import RawData
 from utils.interactive_matplot import InteractiveMatplot
 
 
 class DataPresenter:
-
     def show_raw_data(self, data: RawData):
         img = plt.imread(data.img_path)
         plot = InteractiveMatplot()

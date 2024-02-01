@@ -83,6 +83,16 @@ class VOC2012Dataset(Dataset):
                 data = RawData(image_id=len(data_list), img_dir=self.img_dir, ann_dir=self.ann_dir, name=line.strip())
                 data_list.append(data)
 
+    @staticmethod
+    def collate_fn(batch):
+        # print(f"type(batch) = {type(batch)}, len(batch) = {len(batch)}, "
+        #       f"type(batch[0]) = {type(batch[0])}, len(batch[0]) = {len(batch[0])}, "
+        #       f"type[batch[0][0]] = {type(batch[0][0])}, type[batch[0][1]] = {type(batch[0][1])}")
+        # print(f"tuple(zip(*batch)) = {tuple(zip(*batch))}")
+        # print(f"len(tuple(zip(*batch))) = {len(tuple(zip(*batch)))}")
+        # print(f"zip(*batch) = {zip(*batch)}")
+        return tuple(zip(*batch))
+
 
 class RawData:
     def __init__(self, image_id: int, img_dir: str, ann_dir: str, name: str):
