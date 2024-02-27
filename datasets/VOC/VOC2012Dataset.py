@@ -2,6 +2,7 @@
 import os
 import xml.etree.ElementTree as ET
 from xml.etree.ElementTree import Element
+from torchvision.transforms.transforms import Compose
 
 import torch
 from PIL import Image
@@ -18,7 +19,7 @@ g_classes_map: dict[str, int] = {}
 
 class VOC2012Dataset(Dataset):
 
-    def __init__(self, root_dir: str, train_val: str = 'ALL'):
+    def __init__(self, root_dir: str, train_val: str = 'ALL', transform: Compose = None):
         self.root_dir = root_dir
         self.img_dir = os.path.join(self.root_dir, IMAGE_PATH)
         self.ann_dir = os.path.join(self.root_dir, ANNOTATIONS_PATH)
@@ -30,6 +31,7 @@ class VOC2012Dataset(Dataset):
         self.val: list[RawData] = []
 
         self.resolve_main(self.main_path)
+        self.transform = transform
 
     def __len__(self):
         return len(self._get_data_list())
@@ -51,6 +53,8 @@ class VOC2012Dataset(Dataset):
             'iscrowd': torch.as_tensor(is_crowd, dtype=torch.int64)
         }
         image = Image.open(data.img_path)
+        if self.transform is not None:
+            image = self.transform(image)
         return image, target
 
     def get_height_and_width(self, item):
@@ -90,7 +94,7 @@ class VOC2012Dataset(Dataset):
         #       f"type[batch[0][0]] = {type(batch[0][0])}, type[batch[0][1]] = {type(batch[0][1])}")
         # print(f"tuple(zip(*batch)) = {tuple(zip(*batch))}")
         # print(f"len(tuple(zip(*batch))) = {len(tuple(zip(*batch)))}")
-        # print(f"zip(*batch) = {zip(*batch)}")
+        # print(f"tuple(zip(*batch)) = {len(tuple(zip(*batch)))}")
         return tuple(zip(*batch))
 
 
